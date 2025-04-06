@@ -1,0 +1,64 @@
+{
+    "data": [
+        {
+            "text": "Die Katze springt im Park.",
+            "category": "Tiere",
+            "question": "Was macht die Katze?",
+            "answer": "Die Katze springt."
+        },
+        {
+            "text": "Der Baum wächst hoch.",
+            "category": "Pflanzen",
+            "question": "Was tut der Baum?",
+            "answer": "Der Baum wächst."
+        },
+        {
+            "text": "Der Computer berechnet komplexe Aufgaben.",
+            "category": "Technologie",
+            "question": "Was macht der Computer?",
+            "answer": "Der Computer berechnet Aufgaben."
+        },
+        {
+            "text": "Der Himmel ist blau.",
+            "category": "Natur",
+            "question": "Was ist blau?",
+            "answer": "Der Himmel ist blau."
+        },
+        {
+            "text": "Das Auto fährt schnell auf der Straße.",
+            "category": "Verkehr",
+            "question": "Was tut das Auto?",
+            "answer": "Das Auto fährt schnell."
+        },
+        {
+            "text": "Der Apfel fällt vom Baum.",
+            "category": "Natur",
+            "question": "Was passiert mit dem Apfel?",
+            "answer": "Der Apfel fällt vom Baum."
+        },
+        {
+            "text": "Die Sonne scheint hell am Himmel.",
+            "category": "Wetter",
+            "question": "Was tut die Sonne?",
+            "answer": "Die Sonne scheint hell."
+        },
+        {
+            "text": "Der Zug fährt pünktlich am Bahnhof ab.",
+            "category": "Verkehr",
+            "question": "Wann fährt der Zug ab?",
+            "answer": "Der Zug fährt pünktlich ab."
+        },
+        {
+            "text": "Der Hund läuft im Garten.",
+            "category": "Tiere",
+            "question": "Wo läuft der Hund?",
+            "answer": "Der Hund läuft im Garten."
+        },
+        {
+            "text": "Der Fisch schwimmt im Wasser.",
+            "category": "Tiere",
+            "question": "Was macht der Fisch?",
+            "answer": "Der Fisch schwimmt."
+        }
+    ]
+}

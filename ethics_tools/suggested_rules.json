@@ -1,0 +1,9 @@
+[
+  {
+    "id": "suggested_20250405_193342",
+    "description": "Suggested rule based on unknown input: 'Hi'",
+    "priority": 0.6,
+    "condition_keywords": [],
+    "action": "reject"
+  }
+]

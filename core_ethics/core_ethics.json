@@ -1,0 +1,81 @@
+[
+  {
+    "id": "avoid_harm",
+    "description": "Avoid harming any living being.",
+    "priority": 1.0,
+    "condition_keywords": [
+      "harm",
+      "kill",
+      "destroy",
+      "hurt",
+      "attack"
+    ],
+    "action": "reject"
+  },
+  {
+    "id": "respect_freedom",
+    "description": "Respect human freedom and autonomy.",
+    "priority": 0.9,
+    "condition_keywords": [
+      "force",
+      "coerce",
+      "control",
+      "enslave"
+    ],
+    "action": "reject"
+  },
+  {
+    "id": "support_truth",
+    "description": "Promote honesty and avoid deception.",
+    "priority": 0.8,
+    "condition_keywords": [
+      "lie",
+      "deceive",
+      "fake",
+      "mislead",
+      "manipulate"
+    ],
+    "action": "reject"
+  },
+  {
+    "id": "share_safe_info",
+    "description": "It is okay to share neutral and safe information.",
+    "priority": 0.4,
+    "condition_keywords": [
+      "weather",
+      "time",
+      "hello",
+      "greetings",
+      "day"
+    ],
+    "action": "allow"
+  },
+  {
+    "id": "suggested_20250405_182408",
+    "description": "Suggested rule based on unknown input: 'Hallo'",
+    "priority": 0.6,
+    "condition_keywords": [],
+    "action": "reject"
+  },
+  {
+    "id": "suggested_20250405_183043",
+    "description": "Suggested rule based on unknown input: 'Hallo'",
+    "priority": 0.6,
+    "condition_keywords": [],
+    "action": "reject"
+  },
+  {
+    "id": "suggested_20250405_183412",
+    "description": "Suggested rule based on unknown input: 'Hallo'",
+    "priority": 0.6,
+    "condition_keywords": [],
+    "action": "reject"
+  },
+  {
+    "id": "suggested_20250405_183432",
+    "description": "Suggested rule based on unknown input: 'Hallo'",
+    "priority": 0.6,
+    "condition_keywords": [],
+    "action": "reject"
+  }
+]

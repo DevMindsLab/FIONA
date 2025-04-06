@@ -1,0 +1,70 @@
+{
+    "data": [
+        {
+            "text": "Die Erde ist der dritte Planet von der Sonne.",
+            "category": "Geografie",
+            "question": "Welcher Planet ist die Erde?",
+            "answer": "Die Erde ist der dritte Planet von der Sonne."
+        },
+        {
+            "text": "Die chemische Formel von Wasser ist H2O.",
+            "category": "Wissenschaft",
+            "question": "Was ist die chemische Formel von Wasser?",
+            "answer": "Die chemische Formel von Wasser ist H2O."
+        },
+        {
+            "text": "Albert Einstein entwickelte die Relativitätstheorie.",
+            "category": "Wissenschaft",
+            "question": "Wer entwickelte die Relativitätstheorie?",
+            "answer": "Albert Einstein entwickelte die Relativitätstheorie."
+        },
+        {
+            "text": "Die Hauptstadt von Frankreich ist Paris.",
+            "category": "Geografie",
+            "question": "Was ist die Hauptstadt von Frankreich?",
+            "answer": "Die Hauptstadt von Frankreich ist Paris."
+        },
+        {
+            "text": "Die Erde dreht sich um die eigene Achse.",
+            "category": "Wissenschaft",
+            "question": "Was macht die Erde kontinuierlich?",
+            "answer": "Die Erde dreht sich um die eigene Achse."
+        },
+        {
+            "text": "Die erste Mondlandung fand 1969 statt.",
+            "category": "Geschichte",
+            "question": "Wann fand die erste Mondlandung statt?",
+            "answer": "Die erste Mondlandung fand 1969 statt."
+        },
+        {
+            "text": "Die Atombombe wurde während des Zweiten Weltkriegs entwickelt.",
+            "category": "Geschichte",
+            "question": "Wann wurde die Atombombe entwickelt?",
+            "answer": "Die Atombombe wurde während des Zweiten Weltkriegs entwickelt."
+        },
+        {
+            "text": "Wasser kocht bei 100 Grad Celsius.",
+            "category": "Wissenschaft",
+            "question": "Bei welcher Temperatur kocht Wasser?",
+            "answer": "Wasser kocht bei 100 Grad Celsius."
+        },
+        {
+            "text": "Die Entwicklung des Internets begann in den 1960er Jahren.",
+            "category": "Technologie",
+            "question": "Wann begann die Entwicklung des Internets?",
+            "answer": "Die Entwicklung des Internets begann in den 1960er Jahren."
+        },
+        {
+            "text": "Das Periodensystem der Elemente wurde von Dmitri Mendelejew entwickelt.",
+            "category": "Wissenschaft",
+            "question": "Wer entwickelte das Periodensystem der Elemente?",
+            "answer": "Das Periodensystem der Elemente wurde von Dmitri Mendelejew entwickelt."
+        },
+        {
+            "text": "Die Sonnenfinsternis tritt auf, wenn der Mond zwischen der Erde und der Sonne steht.",
+            "category": "Wissenschaft",
+            "question": "Was passiert bei einer Sonnenfinsternis?",
+            "answer": "Die Sonnenfinsternis tritt auf, wenn der Mond zwischen der Erde und der Sonne steht."
+        }
+    ]
+}

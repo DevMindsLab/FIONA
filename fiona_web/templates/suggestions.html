@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggestions – FIONA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #eee;
+            padding: 20px;
+        }
+        h1 {
+            color: #33dd33;
+        }
+        .rule {
+            background-color: #222;
+            border-left: 6px solid #33dd33;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .rule pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 6px;
+        }
+        .accept {
+            background-color: #2ecc71;
+        }
+        .accept:hover {
+            background-color: #27ae60;
+        }
+        .reject {
+            background-color: #e74c3c;
+        }
+        .reject:hover {
+            background-color: #c0392b;
+        }
+        .similar {
+            background-color: #333;
+            margin-top: 8px;
+            padding: 6px;
+            font-size: 0.9em;
+        }
+        .no-suggestions {
+            background-color: #222;
+            border: 1px solid #444;
+            padding: 1rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📜 Review Suggested Rules</h1>
+
+    {% if suggestions %}
+        {% for rule in suggestions %}
+        <div class="rule">
+            <strong>ID:</strong> {{ rule.id }}<br>
+            <strong>Description:</strong> {{ rule.description }}<br>
+            <strong>Action:</strong> {{ rule.action }}<br>
+            <strong>Priority:</strong> {{ rule.priority }}<br>
+            <strong>Keywords:</strong> {{ rule.condition_keywords|join(", ") }}<br>
+
+            {% if rule.similar %}
+            <div class="similar">
+                <strong>⚠️ Similar Rules:</strong>
+                <ul>
+                    {% for match in rule.similar %}
+                    <li>{{ match.id }} (Score: {{ match.similarity_score }}, Keywords: {{ match.overlap_keywords|join(", ") }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                <input type="hidden" name="rule_id" value="{{ rule.id }}">
+                <button class="btn accept" type="submit" name="action" value="accept">✅ Accept</button>
+                <button class="btn reject" type="submit" name="action" value="reject">🗑️ Reject</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-suggestions">✅ No suggestions available.</div>
+    {% endif %}
+</body>
+</html>
