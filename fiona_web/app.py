@@ -1,3 +1,33 @@
+"""
+======================================
+FIONA - Projektname
+
+Autor: Rene Baumgarten (DevMindsLab)
+Datum: 21.03.2025
+Version: 0.4
+
+Beschreibung:
+---------------
+Diese Python-Datei ist Teil des **FIONA**-Projekts,
+einer ethisch ausgerichteten,
+Open-Source-basierten Künstlichen Intelligenz (KAI). Das Projekt strebt an,
+verantwortungsbewusste, nachvollziehbare und kontrollierte Entscheidungen in ethischen Dilemmata zu treffen.
+Der Code in dieser Datei ist Teil des Backends, das für [Beschreibung der Funktionalität der Datei] zuständig ist.
+
+Funktions Beschreibung:
+---------------
+ist die zentrale Datei für die Webanwendung von FIONA.
+Sie steuert den Webserver, verwaltet Benutzeranfragen und stellt sicher,
+dass die richtigen ethischen Prüfungen und Antworten ausgegeben werden.
+
+Wichtige Hinweise:
+------------------
+- Diese Datei ist ein Bestandteil des gesamten FIONA-Systems und sollte nicht isoliert verwendet werden.
+- Achte darauf, alle Änderungen gründlich zu testen, da das System stark auf ethische Validierungen angewiesen ist.
+- Weitere Dokumentation findest du in der `README.md` und der `DEV_README.md`.
+
+"""
+
 from flask import Flask, render_template, request, redirect, url_for
 import json
 import os

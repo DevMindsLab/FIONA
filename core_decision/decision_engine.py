@@ -1,3 +1,36 @@
+"""
+======================================
+FIONA - Projektname
+
+Autor: Rene Baumgarten (DevMindsLab)
+Datum: 21.03.2025
+Version: 0.8
+
+Beschreibung:
+---------------
+Diese Python-Datei ist Teil des **FIONA**-Projekts,
+einer ethisch ausgerichteten,
+Open-Source-basierten Künstlichen Intelligenz (KAI). Das Projekt strebt an,
+verantwortungsbewusste, nachvollziehbare und kontrollierte Entscheidungen in ethischen Dilemmata zu treffen.
+Der Code in dieser Datei ist Teil des Backends, das für [Beschreibung der Funktionalität der Datei] zuständig ist.
+
+Funktions Beschreibung:
+---------------
+Verarbeitet und analysiert Benutzereingaben,
+um fundierte Entscheidungen zu treffen.
+Es bewertet Eingaben basierend auf ethischen Regeln und Modellen und stellt sicher,
+dass die getroffenen Entscheidungen mit den festgelegten ethischen Standards übereinstimmen.
+Das Modul ist für die Entscheidungslogik verantwortlich.
+
+
+Wichtige Hinweise:
+------------------
+- Diese Datei ist ein Bestandteil des gesamten FIONA-Systems und sollte nicht isoliert verwendet werden.
+- Achte darauf, alle Änderungen gründlich zu testen, da das System stark auf ethische Validierungen angewiesen ist.
+- Weitere Dokumentation findest du in der `README.md` und der `DEV_README.md`.
+
+"""
+
 import logging
 from core_parser.parser import parse_input
 from core_ethics.engine import CoreEthicsEngine
