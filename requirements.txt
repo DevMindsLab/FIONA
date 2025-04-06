@@ -1,0 +1,9 @@
+
+Flask==2.1.2
+torch==1.11.0
+sentencepiece==0.1.96
+numpy==1.21.5
+scipy==1.7.3
+transformers==4.11.3
+flask-wtf==1.0.1
+jinja2==3.0.3
