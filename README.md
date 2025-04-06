@@ -72,6 +72,6 @@ fiona_web/
 
 ## 📝 Lizenz
 
-Mini-FIONA ist ein **Open-Source-Projekt** unter der **MIT-Lizenz**.  
+Mini-FIONA ist ein **Open-Source-Projekt** unter der **GNU-Lizenz**.  
 Siehe [LICENSE](LICENSE) für weitere Details.
 # FIONA
