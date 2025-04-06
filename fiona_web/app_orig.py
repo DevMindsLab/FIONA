@@ -3,31 +3,11 @@ import json
 import os
 import logging
 
-# Dummy-Implementierung von respond_to_input (wegen der Entfernung von hybrid_core)
-def respond_to_input(user_input):
-    # Rückgabe einer einfachen Antwort basierend auf der Eingabe
-    return {
-        "response": f"Antwort auf die Frage: {user_input}",
-        "type": "text",
-        "decision": "accepted",
-        "reason": "Antwort wurde basierend auf den Regeln generiert."
-    }
-
-# Dummy-Ethische Validierung (wegen Entfernung von check_ethics_validity)
-def check_ethics_validity():
-    # Immer als gültig zurückgeben, da keine Ethikprüfung mehr vorhanden ist
-    return True, "Ethikprüfung erfolgreich."
-
-# Dummy-Implementierung von ContextMemory (wegen Entfernung)
-class ContextMemory:
-    def __init__(self):
-        self.memory = []
-
-    def remember(self, user_input, decision, reason):
-        self.memory.append({"input": user_input, "decision": decision, "reason": reason})
-
-    def get_last_ethics(self):
-        return self.memory[-1] if self.memory else None
+from hybrid_core.hybrid_engine import respond_to_input
+from core_interface.ethics_link import check_ethics_validity
+from core_interface.context_memory import ContextMemory
+from review import load_unreviewed, update_question_status
+from ethics_tools.similarity_check import check_similarity
 
 logging.basicConfig(level=logging.INFO, format='[FIONA][App] %(message)s')
 
