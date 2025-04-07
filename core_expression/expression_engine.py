@@ -60,39 +60,56 @@ TEMPLATES = {
     ]
 }
 
-def generate_response(result: dict) -> str:
-    decision = result["decision"]
-    ethics = result.get("ethics", {})
-    reason = ethics.get("reason", "No ethical reason given.")
-    rule_info = ethics.get("matched_rules", [])
-    parsed = result.get("parsed", {})
+def generate_batch(results: list) -> list:
+    responses = []
+    for result in results:
+        decision = result["decision"]
+        ethics = result.get("ethics", {})
+        reason = ethics.get("reason", "No ethical reason given.")
+        rule_info = ethics.get("matched_rules", [])
+        parsed = result.get("parsed", {})
 
-    base = random.choice(TEMPLATES.get(decision, ["(No response template found.)"]))
-    logging.info(f"Generated template for decision '{decision}': {base}")
+        base = random.choice(TEMPLATES.get(decision, ["(No response template found.)"]))
+        logging.info(f"Generated template for decision '{decision}': {base}")
 
-    response = f"{base}\n\n🧠 Ethics: {reason}"
-    if rule_info:
-        response += f"\n📜 Rules involved: {', '.join(rule_info)}"
+        response = f"{base}\n\n🧠 Ethics: {reason}"
+        if rule_info:
+            response += f"\n📜 Rules involved: {', '.join(rule_info)}"
 
-    if decision == "neutral" and result.get("suggested_rule"):
-        response += f"\n📎 New rule suggested: {result['suggested_rule']['id']}"
+        if decision == "neutral" and result.get("suggested_rule"):
+            response += f"\n📎 New rule suggested: {result['suggested_rule']['id']}"
 
-    if "self_reference" in parsed.get("intents", []):
-        response += "\n👤 I recognize your personal perspective."
+        if "self_reference" in parsed.get("intents", []):
+            response += "\n👤 I recognize your personal perspective."
 
-    return response
+        responses.append(response)
+    return responses
 
 # Debug
 if __name__ == "__main__":
-    sample = {
-        "decision": "reject",
-        "ethics": {
-            "reason": "This action may lead to harm.",
-            "matched_rules": ["avoid_harm"]
+    # Beispiel: Batch von Ergebnissen
+    batch_sample = [
+        {
+            "decision": "reject",
+            "ethics": {
+                "reason": "This action may lead to harm.",
+                "matched_rules": ["avoid_harm"]
+            },
+            "suggested_rule": None,
+            "parsed": {"intents": ["harm", "self_reference"]}
         },
-        "suggested_rule": None,
-        "parsed": {"intents": ["harm", "self_reference"]}
-    }
+        {
+            "decision": "accept",
+            "ethics": {
+                "reason": "This action is ethically sound.",
+                "matched_rules": ["ethical_action"]
+            },
+            "suggested_rule": None,
+            "parsed": {"intents": ["approval"]}
+        }
+    ]
 
-    print("\n🗣️ EXPRESSION:")
-    print(generate_response(sample))
+    print("\n🗣️ EXPRESSION BATCH:")
+    responses = generate_batch(batch_sample)
+    for response in responses:
+        print(response)

@@ -30,7 +30,9 @@ Wichtige Hinweise:
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
+
+from sympy.matrices.expressions.kronecker import rules
 
 logging.basicConfig(level=logging.INFO, format='[FIONA][ContextMemory] %(message)s')
 
@@ -41,7 +43,7 @@ class ContextMemory:
 
     def remember(self, user_input: str, decision: str, reason: str):
         entry = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "input": user_input,
             "decision": decision,
             "reason": reason

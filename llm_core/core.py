@@ -1,98 +1,69 @@
-"""
-======================================
-FIONA - Projektname
-
-Autor: Rene Baumgarten (DevMindsLab)
-Datum: 21.03.2025
-Version: 0.4
-
-Beschreibung:
----------------
-Diese Python-Datei ist Teil des **FIONA**-Projekts,
-einer ethisch ausgerichteten,
-Open-Source-basierten Künstlichen Intelligenz (KAI). Das Projekt strebt an,
-verantwortungsbewusste, nachvollziehbare und kontrollierte Entscheidungen in ethischen Dilemmata zu treffen.
-Der Code in dieser Datei ist Teil des Backends, das für [Beschreibung der Funktionalität der Datei] zuständig ist.
-
-Funktions Beschreibung:
----------------
-ist das Herzstück des Sprachmodells von FIONA.
-Es verwaltet die Kernlogik für das Sprachverständnis,
-die Texterstellung und die Entscheidungsfindung auf Basis des Sprachmodells.
-
-
-Wichtige Hinweise:
-------------------
-- Diese Datei ist ein Bestandteil des gesamten FIONA-Systems und sollte nicht isoliert verwendet werden.
-- Achte darauf, alle Änderungen gründlich zu testen, da das System stark auf ethische Validierungen angewiesen ist.
-- Weitere Dokumentation findest du in der `README.md` und der `DEV_README.md`.
-
-"""
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import os
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import logging
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format='[FIONA][Mini-LLM] %(message)s')
+logging.basicConfig(level=logging.INFO, format='[FIONA][LLM-Core] %(message)s')
 
-class TransformerBlock(nn.Module):
-    def __init__(self, embed_dim: int, heads: int):
-        super().__init__()
-        self.attn = nn.MultiheadAttention(embed_dim, heads, batch_first=True)
-        self.ff = nn.Sequential(
-            nn.Linear(embed_dim, embed_dim * 4),
-            nn.ReLU(),
-            nn.Linear(embed_dim * 4, embed_dim)
+
+__all__ = ["CoreLLM", "check_model_integrity"]
+
+def check_model_integrity(model_path: str, tokenizer_path: str) -> bool:
+    required_files = [
+        "config.json",
+        "pytorch_model.bin",  # oder: model.safetensors
+        "tokenizer.json",
+        "vocab.json",
+        "tokenizer_config.json"
+    ]
+
+    all_paths = [
+        os.path.join(model_path, f) for f in required_files[:2]
+    ] + [
+        os.path.join(tokenizer_path, f) for f in required_files[2:]
+    ]
+
+    missing = [f for f in all_paths if not os.path.exists(f)]
+    if missing:
+        logging.error("[FIONA][LLM-Core] Missing required model/tokenizer files:")
+        for f in missing:
+            logging.error(f"  - {f}")
+        return False
+
+    logging.info("[FIONA][LLM-Core] Model and tokenizer files verified.")
+    return True
+
+class CoreLLM:
+    def __init__(self, model_path: str, tokenizer_path: str, ethics_rules_path: str):
+        model_path = Path(model_path).resolve()
+        tokenizer_path = Path(tokenizer_path).resolve()
+
+        logging.info(f"Loading model from: {model_path}")
+        self.model = GPT2LMHeadModel.from_pretrained(
+            pretrained_model_name_or_path=model_path,
+            local_files_only=True,
+            use_safetensors=False  # Wichtig: zwingt das Laden von .bin
         )
-        self.norm1 = nn.LayerNorm(embed_dim)
-        self.norm2 = nn.LayerNorm(embed_dim)
+        logging.info("Model loaded successfully.")
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        B, T, C = x.size()
-        mask = torch.tril(torch.ones(T, T, device=x.device)).unsqueeze(0).expand(B, -1, -1)
-        attn_out, _ = self.attn(x, x, x, attn_mask=~mask.bool())
-        x = self.norm1(x + attn_out)
-        x = self.norm2(x + self.ff(x))
-        return x
+        logging.info(f"Loading tokenizer from: {tokenizer_path}")
+        self.tokenizer = GPT2Tokenizer.from_pretrained(
+            pretrained_model_name_or_path=tokenizer_path,
+            local_files_only=True
+        )
+        logging.info("Tokenizer loaded successfully.")
 
-class LanguageModel(nn.Module):
-    def __init__(self, vocab_size: int, embed_dim: int, n_heads: int, n_layers: int, block_size: int):
-        super().__init__()
-        self.token_embed = nn.Embedding(vocab_size, embed_dim)
-        self.pos_embed = nn.Embedding(block_size, embed_dim)
-        self.blocks = nn.Sequential(*[TransformerBlock(embed_dim, n_heads) for _ in range(n_layers)])
-        self.norm = nn.LayerNorm(embed_dim)
-        self.head = nn.Linear(embed_dim, vocab_size)
-        self.block_size = block_size
-        self.apply(self._init_weights)
-        logging.info(f"Initialized LanguageModel with {n_layers} layers, {n_heads} heads, dim {embed_dim}")
+        self.model.eval()
 
-    def _init_weights(self, module):
-        if isinstance(module, nn.Linear):
-            nn.init.kaiming_uniform_(module.weight, a=0.01)
-            if module.bias is not None:
-                nn.init.zeros_(module.bias)
-        elif isinstance(module, nn.Embedding):
-            nn.init.normal_(module.weight, mean=0.0, std=0.02)
-
-    def forward(self, idx: torch.Tensor, targets: torch.Tensor | None = None) -> torch.Tensor:
-        B, T = idx.shape
-        if T > self.block_size:
-            raise ValueError(f"Input sequence length {T} exceeds block size {self.block_size}")
-
-        token_embed = self.token_embed(idx)
-        pos = torch.arange(T, device=idx.device).unsqueeze(0)
-        pos_embed = self.pos_embed(pos)
-        x = token_embed + pos_embed
-
-        x = self.blocks(x)
-        x = self.norm(x)
-        logits = self.head(x)
-
-        if targets is None:
-            return logits
-        else:
-            B, T, C = logits.shape
-            loss = F.cross_entropy(logits.view(B * T, C), targets.view(B * T))
-            return loss
+    def generate_response(self, prompt: str, max_length: int = 100) -> str:
+        inputs = self.tokenizer.encode(prompt, return_tensors="pt")
+        outputs = self.model.generate(
+            inputs,
+            max_length=max_length,
+            num_return_sequences=1,
+            no_repeat_ngram_size=2,
+            top_k=50,
+            top_p=0.95,
+            temperature=1.0
+        )
+        return self.tokenizer.decode(outputs[0], skip_special_tokens=True)

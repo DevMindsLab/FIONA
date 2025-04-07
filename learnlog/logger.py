@@ -30,7 +30,7 @@ Wichtige Hinweise:
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format='[FIONA][Logger] %(message)s')
@@ -39,7 +39,7 @@ LOG_PATH = Path(__file__).resolve().parent / "learnlog.jsonl"
 
 def log_question(question: str, source: str = "unknown"):
     entry = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "question": question,
         "source": source,
         "status": "unreviewed"
