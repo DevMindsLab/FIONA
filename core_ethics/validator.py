@@ -43,9 +43,14 @@ CORE_FILE = Path(__file__).parent / "ethics_core.json"
 HASH_FILE = Path(__file__).parent / "ethics_core.hash"
 
 def calculate_hash(file_path):
-    with open(file_path, "rb") as f:
-        file_data = f.read()
-    return hashlib.sha256(file_data).hexdigest()
+    try:
+        with open(file_path, "rb") as f:
+            file_data = f.read()
+            logging.debug(f"File content: {file_data[:100]}...")  # Zeigt die ersten 100 Bytes an (optional)
+        return hashlib.sha256(file_data).hexdigest()
+    except Exception as e:
+        logging.error(f"Failed to read or hash the file: {e}")
+        return None
 
 def validate_ethics_core():
     if not CORE_FILE.exists() or not HASH_FILE.exists():
@@ -74,10 +79,17 @@ def show_rules(data):
         logging.info(f"- [{rule_id}] {description}")
 
 def recalculate_hash():
-    new_hash = calculate_hash(CORE_FILE)
-    with open(HASH_FILE, "w") as f:
-        f.write(new_hash)
-    logging.info("Hash file updated.")
+    try:
+        # Lese die Datei und berechne den Hash
+        new_hash = calculate_hash(CORE_FILE)
+        if new_hash:
+            with open(HASH_FILE, "w") as f:
+                f.write(new_hash)
+            logging.info("Hash file updated.")
+        else:
+            logging.error("Failed to compute the new hash.")
+    except Exception as e:
+        logging.error(f"Error recalculating the hash: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Validate the ethics core integrity.")

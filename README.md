@@ -27,7 +27,12 @@ fiona_web/
 
 3. **Flask-Server starten**:
    ```bash
-   python fiona_web/app.py
+   python web/app.py
+   ```
+   oder
+   **CLI starten** (Für Entwickler):
+   ```bash
+   python Interface_cli/cli_main.py
    ```
 
 4. Gehe auf [http://127.0.0.1:5000/](http://127.0.0.1:5000/) im Browser, um die Web-App zu testen.

@@ -49,33 +49,5 @@
       "day"
     ],
     "action": "allow"
-  },
-  {
-    "id": "suggested_20250405_182408",
-    "description": "Suggested rule based on unknown input: 'Hallo'",
-    "priority": 0.6,
-    "condition_keywords": [],
-    "action": "reject"
-  },
-  {
-    "id": "suggested_20250405_183043",
-    "description": "Suggested rule based on unknown input: 'Hallo'",
-    "priority": 0.6,
-    "condition_keywords": [],
-    "action": "reject"
-  },
-  {
-    "id": "suggested_20250405_183412",
-    "description": "Suggested rule based on unknown input: 'Hallo'",
-    "priority": 0.6,
-    "condition_keywords": [],
-    "action": "reject"
-  },
-  {
-    "id": "suggested_20250405_183432",
-    "description": "Suggested rule based on unknown input: 'Hallo'",
-    "priority": 0.6,
-    "condition_keywords": [],
-    "action": "reject"
   }
 ]

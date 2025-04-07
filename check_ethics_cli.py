@@ -29,7 +29,7 @@ Wichtige Hinweise:
 
 """
 
-from core_interface.ethics_link import check_ethics_validity
+from core_ethics.ethics_link import check_ethics_validity
 
 def main():
     valid, message = check_ethics_validity()

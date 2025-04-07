@@ -16,10 +16,9 @@ Der Code in dieser Datei ist Teil des Backends, das für [Beschreibung der Funkt
 
 Funktions Beschreibung:
 ---------------
-Diese Datei enthält die Hauptlogik für die Ethikprüfung.
-Sie analysiert Eingaben und prüft deren Übereinstimmung mit den Ethikrichtlinien von FIONA.
-Entscheidungen werden basierend auf diesen Prüfungen getroffen und zur weiteren Verarbeitung zurückgegeben.
-
+ist die zentrale Datei für die Webanwendung von FIONA.
+Sie steuert den Webserver, verwaltet Benutzeranfragen und stellt sicher,
+dass die richtigen ethischen Prüfungen und Antworten ausgegeben werden.
 
 Wichtige Hinweise:
 ------------------
@@ -33,17 +32,24 @@ from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
 import logging
-
-from hybrid_core.hybrid_engine import respond_to_input
-from core_interface.ethics_link import check_ethics_validity
-from core_interface.context_memory import ContextMemory
-from review import load_unreviewed, update_question_status
+from utils.logger import Logger  # Importiere den Logger aus dem utils-Ordner
 from ethics_tools.similarity_check import check_similarity
+from review import update_question_status
+from core_decision.decision_engine import DecisionEngine
+from core_ethics.engine import CoreEthicsEngine  # Importiere die CoreEthicsEngine
+from core_interface.context_memory import ContextMemory  # Importiere die ContextMemory-Klasse
+
+# Initialisiere den Logger
+logger = Logger()
 
 logging.basicConfig(level=logging.INFO, format='[FIONA][App] %(message)s')
 
 app = Flask(__name__)
-memory = ContextMemory()
+
+# Initialisiere die Engines und das ContextMemory-Objekt
+ethics_engine = CoreEthicsEngine()  # Initialisiere den CoreEthicsEngine
+decision_engine = DecisionEngine()  # Initialisiere die DecisionEngine
+memory = ContextMemory()  # Initialisiere das ContextMemory-Objekt
 
 SUGGESTED_PATH = os.path.join(os.path.dirname(__file__), "../ethics_tools/suggested_rules.json")
 CORE_PATH = os.path.join(os.path.dirname(__file__), "../core_ethics/core_ethics.json")
@@ -53,7 +59,7 @@ def load_json(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        logging.warning(f"Failed to load JSON from {path}: {e}")
+        logger.log(f"Failed to load JSON from {path}: {e}", level="ERROR")  # Logge den Fehler
         return []
 
 def save_json(path, data):
@@ -61,40 +67,56 @@ def save_json(path, data):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
     except Exception as e:
-        logging.error(f"Failed to save JSON to {path}: {e}")
+        logger.log(f"Failed to save JSON to {path}: {e}", level="ERROR")  # Logge den Fehler
 
 def is_valid_rule(rule):
     required_keys = ["id", "description", "condition_keywords", "action"]
     return all(k in rule for k in required_keys)
 
+def load_unreviewed():
+    all_questions = load_json(SUGGESTED_PATH)
+    unreviewed_questions = [q for q in all_questions if q.get("status") not in ["approved", "rejected"]]
+    return unreviewed_questions
+
 @app.route("/", methods=["GET", "POST"])
 def index():
-    valid, ethics_msg = check_ethics_validity()
     user_input = ""
     response = ""
     debug_info = ""
     context_info = ""
+    valid, ethics_msg = "valid", "Ethikprüfung erfolgreich."
 
     if request.method == "POST":
         user_input = request.form.get("question", "").strip()
 
+        # Logge die Benutzeranfrage
+        logger.log(f"User input: {user_input}")
+
+        # Überprüfe die Ethik mit der CoreEthicsEngine
+        valid, ethics_msg = ethics_engine.evaluate(user_input)["decision"], ethics_msg
+
         if not valid:
             response = "⚠️ Ethikprüfung fehlgeschlagen."
-            debug_info = "ETHIK-KERN UNGÜLTIG"
+            debug_info = f"ETHIK-PRÜFUNG: {ethics_msg}"
+            logger.log(f"Ethikprüfung fehlgeschlagen: {ethics_msg}", level="ERROR")  # Logge das Fehlschlagen
         elif not user_input:
             response = "Bitte gib eine Frage ein."
             debug_info = "Keine Eingabe."
+            logger.log("Keine Benutzereingabe erhalten", level="WARNING")  # Logge die Warnung bei fehlender Eingabe
         else:
-            result = respond_to_input(user_input)
-            response = result.get("response", "(keine Antwort)")
-            debug_info = f"Antworttyp: {result.get('type', '?')}"
+            decision_result = decision_engine.decide(user_input)
+            response = decision_result.get("response", "(keine Antwort)")
+            debug_info = f"Antworttyp: {decision_result.get('type', '?')}"
 
-            memory.remember(user_input, result.get("decision", "?"), result.get("reason", ""))
+            reason = decision_result.get("reason", "Keine Information verfügbar")  # Ersetze None durch eine Standardnachricht
+            logger.log(f"Entscheidung: {decision_result.get('decision')} | Grund: {reason}") # Logge die Entscheidung und den Grund
+
+            memory.remember(user_input, decision_result.get("decision", "?"), decision_result.get("reason", ""))
             last = memory.get_last_ethics()
             if last and last["input"] != user_input:
                 context_info = f"🧠 Letzte Frage: '{last['input']}' → Antwort: '{last['decision']}'"
 
-            logging.info(f"Frage: {user_input} → Typ: {result.get('type')} | Entscheidung: {result.get('decision')}")
+            logging.info(f"Frage: {user_input} → Entscheidung: {decision_result.get('decision')}")
 
     return render_template("index.html",
         question=user_input,
@@ -130,9 +152,9 @@ def suggestions():
             if rule.get("id") == rule_id:
                 if action == "accept" and is_valid_rule(rule):
                     core_rules.append(rule)
-                    logging.info(f"Angenommene Regel: {rule_id}")
+                    logger.log(f"Angenommene Regel: {rule_id}")  # Logge die Annahme der Regel
                 elif action == "reject":
-                    logging.info(f"Abgelehnte Regel: {rule_id}")
+                    logger.log(f"Abgelehnte Regel: {rule_id}")  # Logge die Ablehnung der Regel
                     continue
             else:
                 updated_suggestions.append(rule)

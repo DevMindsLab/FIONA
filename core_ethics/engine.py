@@ -34,6 +34,11 @@ import os
 import logging
 import re
 from typing import List, Dict, Optional
+from utils.logger import Logger  # Importiere den Logger
+from core_ethics.validator import validate_ethics_core  # Importiere die Validierungsfunktion aus validator.py
+
+# Initialisiere den Logger
+logger = Logger(log_file="ethics_engine.log")
 
 logging.basicConfig(level=logging.INFO, format='[FIONA][EthicsEngine] %(message)s')
 
@@ -41,15 +46,23 @@ class CoreEthicsEngine:
     def __init__(self, rules_file: Optional[str] = None):
         if rules_file is None:
             rules_file = os.path.join(os.path.dirname(__file__), "core_ethics.json")
+
+        # Validiere die core_ethics.json Datei, bevor sie geladen wird
+        valid, message = validate_ethics_core()  # Validierung der Ethikdatei
+        if not valid:
+            logger.log(f"Ethics validation failed: {message}", level="ERROR")  # Logge das Fehlschlagen
+            raise ValueError("Ethics core validation failed.")  # Stoppe, wenn die Validierung fehlschlägt
+
+        # Wenn die Validierung erfolgreich war, lade die Regeln
         self.rules = self.load_rules(rules_file)
-        logging.info(f"Loaded {len(self.rules)} rules from {rules_file}")
+        logger.log(f"Loaded {len(self.rules)} rules from {rules_file}")
 
     def load_rules(self, path: str) -> List[Dict]:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            logging.error(f"Failed to load rules: {e}")
+            logger.log(f"Failed to load rules from {path}: {e}", level="ERROR")  # Logge den Fehler
             return []
 
     def evaluate(self, user_input: str) -> Dict:
@@ -58,24 +71,25 @@ class CoreEthicsEngine:
         for rule in self.rules:
             matched = False
 
-            # Check condition_keywords
+            # Überprüfe die Schlüsselwörter der Bedingung
             for keyword in rule.get("condition_keywords", []):
                 if keyword.lower() in user_input.lower():
                     matched = True
                     break
 
-            # Optional regex pattern
+            # Optionales Regex-Muster
             if not matched and "pattern" in rule:
                 try:
                     if re.search(rule["pattern"], user_input, re.IGNORECASE):
                         matched = True
                 except re.error as e:
-                    logging.warning(f"Invalid regex in rule {rule.get('id', '?')}: {e}")
+                    logger.log(f"Invalid regex in rule {rule.get('id', '?')}: {e}", level="WARNING")  # Logge das Problem mit der Regex
 
             if matched:
                 hits.append(rule)
 
         if not hits:
+            logger.log(f"No matching ethical rule found for input: {user_input}", level="INFO")  # Logge den Fall ohne Treffer
             return {
                 "decision": "neutral",
                 "reason": "No matching ethical rule found.",
@@ -86,9 +100,9 @@ class CoreEthicsEngine:
         sorted_hits = sorted(hits, key=lambda r: r.get("priority", 0.5), reverse=True)
         top_rule = sorted_hits[0]
 
-        # Check for same-priority conflicts
+        # Überprüfe Konflikte bei gleicher Priorität
         if len(sorted_hits) > 1 and sorted_hits[0].get("priority") == sorted_hits[1].get("priority"):
-            logging.warning("Multiple rules with equal priority matched.")
+            logger.log("Multiple rules with equal priority matched.", level="WARNING")  # Logge die Warnung bei Konflikten
 
         explanations = [
             f"{r.get('id', '?')} (priority {r.get('priority', 0.5)}) → {r.get('action', 'neutral').upper()}"

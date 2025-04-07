@@ -35,7 +35,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from core_interface.ethics_link import check_ethics_validity
+from core_ethics.ethics_link import check_ethics_validity
 from core_interface.context_memory import ContextMemory
 from core_decision.decision_engine import DecisionEngine
 from core_expression.expression_engine import generate_response

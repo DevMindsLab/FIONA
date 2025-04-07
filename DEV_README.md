@@ -71,7 +71,7 @@ Die Web-App ermöglicht es Benutzern, Fragen zu stellen und Antworten von Mini-F
 
 Um die Web-App zu starten, führe `app.py` aus:
 ```bash
-python fiona_web/app.py
+python web/app.py
 ```
 Rufe die Webanwendung unter [http://127.0.0.1:5000/](http://127.0.0.1:5000/) im Browser auf.
 
